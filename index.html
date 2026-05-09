@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HEYGEN NOTICIAS — Painel Admin</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>🎬 HEYGEN NOTICIAS — Painel Admin</h1>
+  <div class="status" id="status">⚠ Token GitHub não configurado</div>
+</header>
+
+<!-- Tela de configuracao do token -->
+<section id="setup-token" class="card">
+  <h2>🔑 Configurar acesso</h2>
+  <p>Cole seu Personal Access Token (PAT) com escopo
+    <code>contents:write</code> no repo de licenças.</p>
+  <p class="hint">
+    📎 Criar PAT: <a href="https://github.com/settings/personal-access-tokens/new"
+       target="_blank">github.com/settings/personal-access-tokens/new</a>
+  </p>
+  <input type="password" id="token-input"
+         placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+  <input type="text" id="repo-input"
+         placeholder="samuelmkt-2023/heygen-noticias-licencas"
+         value="samuelmkt-2023/heygen-noticias-licencas" />
+  <div class="row">
+    <label>
+      <input type="checkbox" id="lembrar-token" />
+      Lembrar (salva em sessionStorage — zera ao fechar aba)
+    </label>
+  </div>
+  <div class="row">
+    <button onclick="conectar()">🔌 Conectar</button>
+  </div>
+  <div id="conn-status" class="status-msg"></div>
+</section>
+
+<!-- Tela principal -->
+<section id="painel" class="card hidden">
+  <div class="toolbar">
+    <button onclick="recarregar()">🔄 Recarregar</button>
+    <button class="btn-primary" onclick="abrirNovoUsuario()">
+      ➕ Novo Cliente
+    </button>
+    <span class="info">
+      Total: <span id="contador-users">0</span>
+    </span>
+    <button class="btn-secondary" onclick="logout()">🚪 Sair</button>
+  </div>
+
+  <table id="tabela-users">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>HWID</th>
+        <th>Status</th>
+        <th>Criado</th>
+        <th>Expira</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Modal: Novo usuario -->
+<div id="modal-novo" class="modal hidden">
+  <div class="modal-content">
+    <h3>➕ Criar novo cliente</h3>
+    <label>Email do cliente:
+      <input type="email" id="novo-email" placeholder="cliente@x.com" />
+    </label>
+    <label>Senha gerada:
+      <div class="row">
+        <input type="text" id="novo-senha" readonly />
+        <button onclick="gerarSenha()" type="button">🎲 Gerar</button>
+        <button onclick="copiarSenha()" type="button">📋 Copiar</button>
+      </div>
+    </label>
+    <label>Expira em (opcional, YYYY-MM-DD):
+      <input type="date" id="novo-expira" />
+    </label>
+    <div class="row">
+      <button class="btn-primary" onclick="criarUsuario()">✅ Criar</button>
+      <button onclick="fecharModal('modal-novo')">Cancelar</button>
+    </div>
+    <div id="novo-status" class="status-msg"></div>
+  </div>
+</div>
+
+<!-- Modal: Vincular HWID -->
+<div id="modal-hwid" class="modal hidden">
+  <div class="modal-content">
+    <h3>🔓 Vincular HWID ao cliente</h3>
+    <p>Email: <strong id="hwid-email"></strong></p>
+    <label>HWID enviado pelo cliente:
+      <input type="text" id="novo-hwid"
+             placeholder="ABCD1234EFGH5678" />
+    </label>
+    <div class="row">
+      <button class="btn-primary" onclick="salvarHwid()">✅ Vincular</button>
+      <button onclick="fecharModal('modal-hwid')">Cancelar</button>
+    </div>
+    <div id="hwid-status" class="status-msg"></div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
