@@ -9,9 +9,8 @@ const SENHA_SALT = "da352c5340f9ff68560addec7f279b26";
 // Hash SHA-256 da senha. So quem tiver a senha consegue ver o
 // formulario de PAT. Atacante que descubra a URL fica preso na
 // tela "senha mestra" sem opcao.
-// Senha em claro: aavRUYhJZFT4h62FLd8i  (guarde com o admin)
 const SENHA_MESTRA_HASH =
-  "c621e63a4c36bab7cdf6dd2b3c8e06546a0d72a2650e58af960b9bfc393eba5f";
+  "f7c02d356109b28887ad6843e54000ca873fa4ddfd56604eced1c28535b316ba";
 
 let token = null;
 let repo = null;
