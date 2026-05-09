@@ -5,6 +5,14 @@
 // Salt fixo (DEVE bater com o do auth_licenca.py)
 const SENHA_SALT = "da352c5340f9ff68560addec7f279b26";
 
+// ─── SENHA MESTRA — ESCUDO contra acesso publico do painel ───
+// Hash SHA-256 da senha. So quem tiver a senha consegue ver o
+// formulario de PAT. Atacante que descubra a URL fica preso na
+// tela "senha mestra" sem opcao.
+// Senha em claro: aavRUYhJZFT4h62FLd8i  (guarde com o admin)
+const SENHA_MESTRA_HASH =
+  "c621e63a4c36bab7cdf6dd2b3c8e06546a0d72a2650e58af960b9bfc393eba5f";
+
 let token = null;
 let repo = null;
 let usuariosFile = "usuarios.json";
@@ -322,8 +330,48 @@ function fecharModal(id) {
   document.getElementById(id).classList.add('hidden');
 }
 
+// ─── GUARDA: senha mestra antes de tudo ─────────────────────
+async function guardaSenhaMestra() {
+  // Verifica sessionStorage primeiro (ja autenticado nesta sessao?)
+  if (sessionStorage.getItem('heygen_admin_unlocked') === 'yes') {
+    return true;
+  }
+  // 3 tentativas
+  for (let tentativa = 1; tentativa <= 3; tentativa++) {
+    const tent = prompt(
+      `🔒 Senha mestra do admin (${tentativa}/3):`);
+    if (tent === null) {
+      // Cancelou
+      document.body.innerHTML =
+        '<div style="padding:40px;color:#fff;font-family:sans-serif;background:#0f0f1a;height:100vh">' +
+        '<h1 style="color:#f87171">🔒 Acesso negado</h1>' +
+        '<p>Painel protegido por senha mestra.</p></div>';
+      return false;
+    }
+    const hash = await sha256(tent);
+    if (hash === SENHA_MESTRA_HASH) {
+      sessionStorage.setItem('heygen_admin_unlocked', 'yes');
+      return true;
+    }
+    if (tentativa < 3) {
+      alert(`Senha incorreta. Tentativas restantes: ${3 - tentativa}`);
+    }
+  }
+  // 3 erros
+  document.body.innerHTML =
+    '<div style="padding:40px;color:#fff;font-family:sans-serif;background:#0f0f1a;height:100vh">' +
+    '<h1 style="color:#f87171">🔒 Acesso bloqueado</h1>' +
+    '<p>3 tentativas incorretas. Recarregue a pagina pra tentar de novo.</p></div>';
+  return false;
+}
+
 // ─── Auto-load se token salvo ─────────────────────
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  // PRIMEIRO: senha mestra
+  const ok = await guardaSenhaMestra();
+  if (!ok) return;
+
+  // Auto-load
   const t = sessionStorage.getItem('heygen_admin_token');
   const r = sessionStorage.getItem('heygen_admin_repo');
   if (t) {
